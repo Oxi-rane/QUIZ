@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+</head>
+
+
+
+<body>
+<nav id="dashboard">
+
+    <h1>Dashboard</h1>
+    <hr>
+
+    <p>Welcome {{ username }}</p>
+    <p>Your Score: {{score}}</p>
+
+
+    <div id="Actions">
+        <h3>Actions</h3>
+
+        <ul>
+            <li><a href="/profile"> 👤 Profile</a></li>
+            <li><a href="/settings"> 🛠️ Settings</a></li>
+            <li><a href="/logout" onclick="return confirm('Are you sure you want to logout?')"> 🚪Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<main>
+    <div id="category" class="category-bar">
+    {% for cat in categories %}
+    <div class="category-wrapper">
+    <div class="category">
+        {{ cat['name'] }}
+        <div class="quiz-dropdown">
+            {% for quiz in cat['quizzes'] %}
+                <a href="#" onclick="loadQuiz({{ quiz['quiz_id'] }}); return false;">
+                {{ quiz['title'] }}
+                </a>
+                
+            {% endfor %}
+        </div>
+    </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div id="quiz">
+<h1 id="quiz-name">Daily Quiz</h1>
+<div id="question">
+<p id="question-text"></p>
+<div id="options"></div>
+
+</div>
+<button id="prev" onclick="prevQuestion()">← Prev</button>
+<button id="next" onclick="nextQuestion()">Next →</button>
+
+</div> 
+
+    
+</div>
+
+
+</main>
+<div id="custom-quiz" style="display:none;">
+    <h2 id="custom-quiz-title"></h2>
+    <div id="custom-quiz-questions"></div>
+    <button id="back-to-dashboard" onclick="backToDashboard()">Back</button>
+    <button id="submit" onclick="submitQuiz()">Submit Quiz</button>
+        
+</div>>
+
+
+
+
+</div> 
+
+
+</body>
+<style>
+    body {
+      background-color: rgb(16, 15, 15);
+      color: aliceblue;
+    }
+    hr{
+      width: 100%;
+    }
+    #dashboard {
+      width: 20%;
+      height: 100%;
+      background-color: rgb(30, 28, 28);
+      border-right: 1px solid rgba(197, 197, 197, 0.2);
+      top: 0px;
+      left: 0px;
+      position: fixed;
+
+    }
+    #dashboard h1 {
+      padding-left: 20px;
+      color: greenyellow;
+      
+    }
+    #dashboard p {
+      padding-left: 20px;
+      color: aliceblue;
+      margin-bottom: 15px;
+      font-size: 32px;
+    }
+    #dashboard h3 {
+      margin-top: 50px;
+      padding-left: 20px;
+      color: aliceblue;
+      margin-bottom: 10px;
+    }
+    #dashboard ul {
+      padding-left: 20px;
+      list-style: none;
+      padding: 0;
+    }
+    #dashboard ul li {
+      
+      margin-bottom: 8px;
+    }
+    #dashboard ul li a {
+      color: rgb(136, 252, 185);
+      text-decoration: none;
+    }
+    #dashboard ul li a:hover {
+      color: rgb(60, 114, 82);
+    }
+    .category-bar {
+      left: 20%;
+      top: 0px;
+      height: 50px;
+      width: 80%;
+      position: fixed;
+      background-color: rgb(30, 28, 28);
+      border-bottom: 1px solid rgba(197, 197, 197, 0.2);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 0 15px;
+    }
+    .category-wrapper {
+      position: relative;
+    }
+    .category {
+      padding: 8px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      color: aliceblue;
+    }
+    .category:hover {
+      background-color: rgba(197, 197, 197, 0.1);
+    }
+    .quiz-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: rgb(30, 28, 28);
+      border: 1px solid rgba(197, 197, 197, 0.2);
+      border-radius: 5px;
+      min-width: 150px;
+      flex-direction: column;
+      z-index: 100;
+      padding: 5px 0;
+    }
+    .quiz-dropdown a {
+      display: block;
+      padding: 5px 10px;
+      text-decoration: none;
+      color: rgb(136, 252, 185);
+    }
+    .quiz-dropdown a:hover {
+      background-color: rgba(197, 197, 197, 0.1);
+      color: rgb(60, 114, 82);
+    }
+    .category:hover .quiz-dropdown {
+      display: flex;
+    }
+    #quiz {
+      top: 100px;
+      width: 500px;
+      left: 22%;
+      margin: auto;
+      position: fixed;
+    }
+    #quiz h1 {
+      color: greenyellow;
+      margin-bottom: 15px;
+    }
+    #quiz p {
+      color: aliceblue;
+      margin-bottom: 15px;
+    }
+    #question {
+      padding: 15px;
+      border: 1px solid rgba(197, 197, 197, 0.3);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      color: aliceblue;
+    
+    }
+    #question-text{
+      font-size:22px;
+    }
+    #options{
+      font-size: 16px;
+    }
+    button {
+      
+     
+      color: black;
+      border: 2px solid rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+      height: 40px;
+      font-size: 16px;
+      padding: 0 15px;
+      cursor: pointer;
+    }
+    #prev {
+      
+      background-color:rgb(153, 153, 153);
+      width: 49%;
+      position: relative;
+      
+    }
+    #next {
+       position: relative;
+      background-color: greenyellow;
+      width: 49%;
+     
+      
+      
+    }
+    #custom-quiz {
+      display: none;
+      margin-left: 22%;
+      padding: 20px;
+    }
+    #custom-quiz h2 {
+      color: greenyellow;
+      margin-bottom: 20px;
+    }
+    #custom-quiz .question {
+      border: 1px solid rgba(197, 197, 197, 0.3);
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      color: aliceblue;
+    }
+    #custom-quiz button {
+ 
+    background-color:greenyellow;
+    color: black;
+    border: 1px solid rgba(96, 96, 96,0.5);
+    border-radius: 8px;
+    height: 40px;
+    width:320px;
+    font-size:16px;
+   
+    }
+    #submit{
+      position: relative;
+      left: 42%;
+    }
+    label {
+      color: aliceblue;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+</style>
+
+<script>
+let current=0;
+const dailies = {{ dailies | tojson }};
+
+
+let answers={{answers|tojson}};
+function renderQuestion(){
+
+    const q = dailies[current];
+
+    document.getElementById("question-text").textContent = q.text;
+
+    let html = "";
+
+    for (let opt of q.options){
+        html += `
+        <label>
+            <input type="radio" name="question" value="${opt.id}">
+            ${opt.text}
+        </label><br>
+        `;
+    }
+
+    document.getElementById("options").innerHTML = html;
+
+    const radios = document.querySelectorAll('input[name="question"]');
+
+    radios.forEach(radio=>{
+        radio.addEventListener("change", function(){
+            checkAnswer(q.id, parseInt(this.value));
+        });
+    });
+
+    if(answers[q.id]){
+        showAnswer(q.id, answers[q.id]);
+    }
+}
+
+function nextQuestion(){
+    if(current < dailies.length - 1){
+        current++;
+        renderQuestion();
+    }
+}
+let quizAnswers = {};
+function prevQuestion(){
+    if(current > 0){
+        current--;
+        renderQuestion();
+    }
+}
+async function checkAnswer(questionId, selectedOption){
+
+    const res = await fetch("/check_answer",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            question_id:questionId,
+            answer:selectedOption
+        })
+    });
+
+    const result = await res.json();
+
+    answers[questionId] = selectedOption;
+
+    const radios = document.querySelectorAll('input[name="question"]');
+
+    radios.forEach(radio=>{
+
+        const label = radio.parentElement;
+        const value = parseInt(radio.value);
+
+        radio.disabled = true;
+
+        if(value === result.correct_option){
+          label.style.backgroundColor = "rgba(100, 220, 100, 0.15)";
+          label.style.border = "1px solid rgba(100, 220, 100, 0.6)";
+          label.style.color = "rgb(136, 252, 185)"         
+        }
+
+        if(value === selectedOption && !result.correct){
+          label.style.backgroundColor = "rgba(220, 80, 80, 0.15)";
+          label.style.border = "1px solid rgba(220, 80, 80, 0.6)";
+          label.style.color = "rgb(252, 136, 136)";
+        }
+
+    });
+}
+async function showAnswer(questionId, selectedOption){
+
+    const res = await fetch("/show_answer",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            question_id:questionId,
+            answer:selectedOption
+        })
+    });
+
+    const result = await res.json();
+
+    answers[questionId] = selectedOption;
+
+    const radios = document.querySelectorAll('input[name="question"]');
+
+    radios.forEach(radio=>{
+
+        const label = radio.parentElement;
+        const value = parseInt(radio.value);
+
+        radio.disabled = true;
+
+        if(value === result.correct_option){
+          label.style.backgroundColor = "rgba(100, 220, 100, 0.15)";
+          label.style.border = "1px solid rgba(100, 220, 100, 0.6)";
+          label.style.color = "rgb(136, 252, 185)"
+        }
+
+        if(value === selectedOption && !result.correct){
+          label.style.backgroundColor = "rgba(220, 80, 80, 0.15)";
+          label.style.border = "1px solid rgba(220, 80, 80, 0.6)";
+          label.style.color = "rgb(252, 136, 136)";
+        }
+
+    });
+}
+async function loadQuiz(quiz_id){
+    try {
+        const res = await fetch(`/get_quiz/${quiz_id}`);
+        const data = await res.json();
+
+        if(!data.questions || data.questions.length === 0) return;
+
+        // Hide daily quiz and category bar
+        document.getElementById('quiz').style.display='none';
+        document.querySelector('.category-bar').style.display='none';
+       
+        // Show custom quiz container
+        const customQuizDiv = document.getElementById('custom-quiz');
+        customQuizDiv.style.display = 'block';
+
+        // Set quiz title
+        document.getElementById('custom-quiz-title').textContent = data.title;
+
+        // Render all questions
+        const questionsDiv = document.getElementById('custom-quiz-questions');
+        questionsDiv.innerHTML = ''; // clear old content
+
+        data.questions.forEach(q => {
+            let html = `<div class="question" id="question-${q.id}">
+                            <p>${q.text}</p>`;
+            q.options.forEach(opt => {
+                html += `
+                    <label>
+                        <input type="radio" name="q${q.id}" value="${opt.id}">
+                        ${opt.text}
+                    </label><br>
+                `;
+            });
+            html += `</div>`;
+
+            questionsDiv.innerHTML += html;
+            
+            
+        });
+        const radios = document.querySelectorAll('#custom-quiz-questions input[type="radio"]');
+
+        radios.forEach(radio => {
+            radio.addEventListener("change", function(){
+
+                const questionId = this.name.replace("q", "");
+                const selectedOption = parseInt(this.value);
+
+                quizAnswers[questionId] = selectedOption;
+
+                const questionDiv = this.closest(".question");
+
+               
+
+            });
+        });
+
+    } catch(e) {
+        console.error(e);
+        alert("Failed to load quiz");
+    }
+}
+function backToDashboard() {
+    document.getElementById('custom-quiz').style.display = 'none';
+    document.getElementById('quiz').style.display = 'block';
+    document.querySelector('.category-bar').style.display = 'flex';
+}
+async function submitQuiz(){
+
+    const res = await fetch("/submit_quiz", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            answers: quizAnswers
+        })
+    });
+
+    const result = await res.json();
+
+    // Color all questions green/red
+    const correctAnswers = result.correct_answers;
+
+    for (const [questionId, correctOptionId] of Object.entries(correctAnswers)) {
+        const selectedOption = quizAnswers[questionId];
+        const questionDiv = document.getElementById(`question-${questionId}`);
+        if (!questionDiv) continue;
+
+        const radios = questionDiv.querySelectorAll("input[type='radio']");
+        radios.forEach(radio => {
+            const label = radio.parentElement;
+            const value = parseInt(radio.value);
+        
+            radio.disabled = true;
+         
+            if (value === correctOptionId) {
+                label.style.backgroundColor = "rgba(100, 220, 100, 0.15)";
+                label.style.border = "1px solid rgba(100, 220, 100, 0.6)";
+                label.style.color = "rgb(136, 252, 185)";
+            }
+            if (value === parseInt(selectedOption) && value !== correctOptionId) {
+                label.style.backgroundColor = "rgba(220, 80, 80, 0.15)";
+                label.style.border = "1px solid rgba(220, 80, 80, 0.6)";
+                label.style.color = "rgb(252, 136, 136)";
+            }
+        });
+    }
+
+    alert(`Score: ${result.score} / ${Object.keys(correctAnswers).length}`);
+}
+window.onload = renderQuestion();
+
+</script>
+
+</html>

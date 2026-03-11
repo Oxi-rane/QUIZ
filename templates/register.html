@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+ 
+</head>
+<style>
+  body{
+    background-color: rgb(16, 15, 15);
+
+  }
+  .card{
+    position: fixed;
+    display: block;
+    top:50px;
+    left:550px;
+    color:greenyellow;
+    width:350px;
+    height: 600px;
+    margin: 4px;
+    padding-top: 20px;
+    padding-left: 20px;
+    border-radius: 20px; 
+    border: 1px solid rgb(96, 96, 96);
+     margin-left: 10px;
+    background-color: rgb(33, 33, 33);
+  }
+  .badge{
+    position: fixed;
+  
+  }
+  .card h2{
+    margin-top: 40px;
+    color: aliceblue;
+    width: 300px;
+  }
+  .card form{
+    padding-top: 20px;
+    font-size: large;
+    
+  }
+  label{
+    display: block;
+    margin-bottom: 10px;
+    color:  gray;
+    
+
+  }
+  input{
+    margin-bottom: 10px;
+    width:300px;
+    height: 35px;
+    font-weight: 500;           
+    color:aliceblue;                 
+    font-size: 0.9rem;           
+    letter-spacing: 0.5px;  
+    border: 1px solid rgb(96, 96, 96);
+    border-radius: 8px;
+    font-size: 16px;                  
+    font-weight: 500; 
+    padding-left: 10px;
+  
+    background-color:  rgb(33, 33, 33);
+    
+  }
+  button{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color:greenyellow;
+    color: black;
+    border: 1px solid rgba(96, 96, 96,0.5);
+    border-radius: 8px;
+    height: 40px;
+    width:320px;
+    font-size:16px;
+  }
+  .login-link a{
+    color: rgb(136, 252, 185);
+
+  }
+  .login-link a:hover{
+    color: rgb(60, 114, 82);
+
+  }
+#error {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background-color: rgba(247, 71, 71, 0.8);
+  color: aliceblue;
+  border-radius: 6px;
+  width: 250px;
+  height: 40px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  animation: popinout 2s ease;
+}
+
+
+
+@keyframes popinout {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  75% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
+
+</style>
+<body>
+
+<div class="card">
+  <div class="badge">New account</div>
+  <h2>Create your<br><em style="color: greenyellow">account</em></h2>
+  <p class="subtitle" style="color: gray">Join us — it only takes a moment.</p>
+
+  <form method="POST" action="/register">
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="your_handle" required>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="••••••••" required>
+    </div>
+
+    <button type="submit">Create Account →</button>
+  </form>
+
+  <div class="divider"></div>
+
+  <p class="login-link">Already have an account? <a href="/login">Sign in</a></p>
+</div>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <p id="error" style="color:aliceblue;">{{ messages[0] }}</p>
+  {% endif %}
+{% endwith %}
+</body>
+</html>
