@@ -27,6 +27,17 @@
     </div>
 </nav>
 <main>
+  <div id="quiz">
+<h1 id="quiz-name">Daily Quiz</h1>
+<div id="question">
+<p id="question-text"></p>
+<div id="options"></div>
+
+</div>
+<button id="prev" onclick="prevQuestion()">← Prev</button>
+<button id="next" onclick="nextQuestion()">Next →</button>
+
+</div> 
     <div id="category" class="category-bar">
     {% for cat in categories %}
     <div class="category-wrapper">
@@ -45,23 +56,14 @@
     {% endfor %}
 </div>
 
-<div id="quiz">
-<h1 id="quiz-name">Daily Quiz</h1>
-<div id="question">
-<p id="question-text"></p>
-<div id="options"></div>
 
-</div>
-<button id="prev" onclick="prevQuestion()">← Prev</button>
-<button id="next" onclick="nextQuestion()">Next →</button>
-
-</div> 
 
     
 </div>
 
 
 </main>
+
 <div id="custom-quiz" style="display:none;">
     <h2 id="custom-quiz-title"></h2>
     <div id="custom-quiz-questions"></div>
@@ -153,6 +155,7 @@
       gap: 10px;
       align-items: center;
       padding: 0 15px;
+      overflow: visible;
     }
     .category-wrapper {
       position: relative;
@@ -166,17 +169,19 @@
     .category:hover {
       background-color: rgba(197, 197, 197, 0.1);
     }
+    
     .quiz-dropdown {
       display: none;
       position: absolute;
-      top: 100%;
+      
       left: 0;
       background-color: rgb(30, 28, 28);
       border: 1px solid rgba(197, 197, 197, 0.2);
       border-radius: 5px;
       min-width: 150px;
+      max-width:100%;
       flex-direction: column;
-      z-index: 100;
+      z-index: 9999;
       padding: 5px 0;
     }
     .quiz-dropdown a {
@@ -192,8 +197,9 @@
     .category:hover .quiz-dropdown {
       display: flex;
     }
+    
     #quiz {
-      top: 100px;
+      top: 80px;
       width: 500px;
       left: 22%;
       margin: auto;

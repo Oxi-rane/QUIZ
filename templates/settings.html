@@ -104,8 +104,6 @@ input{
   animation: popinout 2s ease;
 }
 
-
-
 @keyframes popinout {
   0% {
     opacity: 0;
@@ -132,10 +130,8 @@ input{
 <hr>
 <h3>Account Information</h3>
 
-<p><strong style="font-size: 16px;
-        color: gray;">Username:</strong> {{ user[0] }}</p>
-<p><strong style="font-size: 16px;
-        color: gray;">Email:</strong> {{ user[1] }}</p>
+<p><strong style="font-size: 16px; color: gray;">Username:</strong> {{ user[0] }}</p>
+<p><strong style="font-size: 16px; color: gray;">Email:</strong> {{ user[1] }}</p>
 
 <hr>
 
@@ -144,42 +140,37 @@ input{
 <form method="POST" action="/change_password">
     <input type="password" name="current_password" placeholder="Current Password" required>
     <br><br>
-
     <input type="password" name="new_password" placeholder="New Password" required>
     <br><br>
     <input type="password" name="confirm_password" placeholder="Confirm New Password" required>
     <br><br>
-
-
     <button type="submit">Update Password</button>
 </form>
 
 <hr>
 
-
-
-<a href="/delete_account">Delete Account</a>
-
-<br><br>
-
+<br>
 <a href="/dashboard">Back to Dashboard</a>
 </div>
+
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <p id="flash-data" style="display:none;">{{ messages[0] }}</p>
   {% endif %}
 {% endwith %}
+
 </body>
 <script>
-const flashMessage = document.getElementById("flash-data")?.textContent;
-if(flashMessage?.includes("Incorrect") || flashMessage.includes('match')) {
-      document.getElementById('flash-data').style.display='flex';
-      
-      document.getElementById('flash-data').style.backgroundColor='rgba(247, 71, 71, 0.8)';
-} else {
-    document.getElementById('flash-data').style.display='flex';
-    document.getElementById('flash-data').style.backgroundColor='green';
-    
+const flashEl = document.getElementById("flash-data");
+if (flashEl) {
+    const flashMessage = flashEl.textContent;
+    if (flashMessage.includes("Incorrect") || flashMessage.includes("match")) {
+        flashEl.style.display = 'flex';
+        flashEl.style.backgroundColor = 'rgba(247, 71, 71, 0.8)';
+    } else {
+        flashEl.style.display = 'flex';
+        flashEl.style.backgroundColor = 'green';
+    }
 }
 </script>
 </html>

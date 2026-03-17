@@ -103,8 +103,6 @@
   animation: popinout 2s ease;
 }
 
-
-
 @keyframes popinout {
   0% {
     opacity: 0;
@@ -142,7 +140,6 @@
     <div class="field">
       <div class="field-row">
         <label for="password">Password</label>
-        
       </div>
       <input type="password" id="password" name="password" placeholder="••••••••" required>
       <a href="/forgot-password" class="forgot">Forgot password?</a>
@@ -155,6 +152,7 @@
 
   <p class="register-link">Don't have an account? <a href="/register">Create one</a></p>
 </div>
+
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <p id="error" style="color:aliceblue;">{{ messages[0] }}</p>
@@ -162,16 +160,4 @@
 {% endwith %}
 
 </body>
-<script>
-async function checkLogin(){
-  let res = await fetch('/login')
-  let msg = await res.json()
-
-  if(!msg.valid){
-    alert("Invalid Login")
-  }
-}
-
-checkLogin();
-</script>
 </html>
