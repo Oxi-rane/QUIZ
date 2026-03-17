@@ -114,32 +114,58 @@ def dashboard():
     answers = {r[0]: r[1] for r in rows}
 
     cursor.execute("""
-        SELECT quiz_id, score FROM attempts
+        SELECT quiz_id, MAX(score) as score FROM attempts
         WHERE quiz_id != 1 AND user_id=?
+        GROUP BY quiz_id
         ORDER BY score DESC LIMIT 5
-    """, (user_id,))
+        """, (user_id,))
     scores = cursor.fetchall()
     attempts = []
     for quiz_id, score in scores:
         cursor.execute("SELECT title FROM quizzes WHERE quiz_id=?", (quiz_id,))
         title = cursor.fetchone()[0]
         attempts.append({'title': title, 'score': score})
-
+    cursor.execute("SELECT COUNT(DISTINCT quiz_id) FROM attempts WHERE user_id=? AND quiz_id != 1", (user_id,))
+    quiz_count = cursor.fetchone()[0]
     return render_template('dashboard.html', username=user[0], score=user[1],
-                           categories=categories_with_quizzes, dailies=dailies,
-                           answers=answers, attempts=attempts)
+                            categories=categories_with_quizzes, dailies=dailies,
+                           answers=answers, attempts=attempts,quiz_count=quiz_count)
 
 
+@app.route("/profile")
 @app.route("/profile")
 def profile():
     if "user_id" not in session:
         return redirect("/login")
-
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT username, email FROM users WHERE user_id=?", (session["user_id"],))
+
+    user_id = session["user_id"]
+    cursor.execute("SELECT username, email, total_score FROM users WHERE user_id=?", (user_id,))
     user = cursor.fetchone()
-    return render_template("profile.html", user=user)
+
+    # user's rank
+    cursor.execute("""
+        SELECT COUNT(*) FROM users 
+        WHERE total_score > (SELECT total_score FROM users WHERE user_id=?)
+    """, (user_id,))
+    rank = cursor.fetchone()[0] + 1
+
+    # top 5 leaderboard
+    cursor.execute("""
+        SELECT username, total_score FROM users
+        ORDER BY total_score DESC LIMIT 5
+    """)
+    leaderboard = cursor.fetchall()
+
+    # user's best quiz score
+    cursor.execute("""
+        SELECT MAX(score) FROM attempts WHERE user_id=? AND quiz_id != 1
+    """, (user_id,))
+    best = cursor.fetchone()[0] or 0
+
+    return render_template("profile.html", user=user, rank=rank, leaderboard=leaderboard, best=best)
+
 
 
 @app.route("/settings")
@@ -209,13 +235,20 @@ def check_answer():
     if correct == answer:
         cursor.execute("UPDATE attempts SET score = score + 10 WHERE user_id=? AND quiz_id=1", (user_id,))
         cursor.execute("UPDATE users SET total_score = total_score + 10 WHERE user_id=?", (user_id,))
+        
         db.commit()
-        return jsonify({"correct": True, "correct_option": correct})
+        cursor.execute("select total_score from users WHERE user_id=?", (user_id,))
+        new_score=cursor.fetchone()[0]
+        print(new_score)
+        
+        return jsonify({ "new_score":new_score,"correct": True, "correct_option": correct})
     else:
         cursor.execute("UPDATE attempts SET score = score - 5 WHERE user_id=? AND quiz_id=1", (user_id,))
         cursor.execute("UPDATE users SET total_score = MAX(total_score - 5, 0) WHERE user_id=?", (user_id,))
         db.commit()
-        return jsonify({"correct": False, "correct_option": correct})
+        cursor.execute("select total_score from users WHERE user_id=?", (user_id,))
+        new_score=cursor.fetchone()[0]
+        return jsonify({"new_score":new_score,"correct": False, "correct_option": correct})
 
 
 @app.route("/show_answer", methods=["POST"])
@@ -290,7 +323,7 @@ def submit_quiz():
         if int(selected_option) == correct_option:
             score += 10
         else:
-            score -= 5
+            score = max(score-5,0)
             wrong += 1
 
     cursor.execute("""
@@ -298,9 +331,9 @@ def submit_quiz():
         VALUES (?, ?, ?, ?)
     """, (user_id, quiz_id, max(score, 0), wrong))
     db.commit()
-
     return jsonify({
         'quiz_id': quiz_id,
+        
         "score": score,
         "wrong": wrong,
         "correct_answers": correct_answers

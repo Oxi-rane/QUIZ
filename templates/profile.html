@@ -1,69 +1,60 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Profile</title>
-    <style>
-      body {
-        background-color: rgb(16, 15, 15);
-        color: aliceblue;
-        padding: 100px 550px;
-      }
-       .card{
-    position: fixed;
-    display: block;
-    top:100px;
-    left:550px;
-    color:greenyellow;
-    width:350px;
-    height: 400px;
-    margin: 4px;
-    padding-top: 20px;
-    padding-left: 0px;
-    border-radius: 20px; 
-    border: 1px solid rgb(96, 96, 96);
-     margin-left: 10px;
-    background-color: rgb(33, 33, 33);
-    }
-      p {
-        margin-left: 20px;
-        color: aliceblue;
-        margin-bottom: 10px;
-       
-      }
-      a {
-        display: inline-block;
-        margin-top: 15px;
-        margin-right: 10px;
-        color: rgb(136, 252, 185);
-        text-decoration: none;
-        margin-left: 20px;
-      }
-      a:hover {
-        color: rgb(60, 114, 82);
-      }
-        hr {
-       
-    border: none;
-    border-top: 1px solid rgba(197, 197, 197, 0.3);
-    margin-bottom: 20px ;
- 
+    <link rel="stylesheet" href="/static/css/profile.css">
    
-    width: 100%;
-  }
-    </style>
 </head>
 <body>
 <div class="card">
-<h1 style="color:greenyellow;font-size: 48px; margin-left: 20px;">Profile</h1>
-<hr>
-<p><strong style="font-size: 24px;
-        color: gray;"  >Username:</strong> {{ user[0] }}</p>
-<p><strong style="font-size: 24px;
-        color: gray;" >Email:</strong> {{ user[1] }}</p>
-<br><br><hr>
-<a href="/settings">Edit Settings</a><br><br>
-<a href="/dashboard">Back to Dashboard</a>
+
+  <div class="card-header">
+    <div class="avatar">{{ user[0][0] | upper }}</div>
+    <div class="user-meta">
+      <h2>{{ user[0] }}</h2>
+      <p>{{ user[1] }}</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="stats-row">
+    <div class="stat-box">
+      <span class="val">{{ user[2] }}</span>
+      <span class="lbl">Total Score</span>
+    </div>
+    <div class="stat-box">
+      <span class="val">#{{ rank }}</span>
+      <span class="lbl">Your Rank</span>
+    </div>
+    <div class="stat-box">
+      <span class="val">{{ best }}</span>
+      <span class="lbl">Best Quiz</span>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="section">
+    <h4>🏆 Leaderboard</h4>
+    {% for entry in leaderboard %}
+    <div class="leaderboard-row {% if entry[0] == user[0] %}highlight{% endif %}">
+      <span class="pos">{{ loop.index }}</span>
+      <span class="name">{{ entry[0] }}</span>
+      <span class="pts">{{ entry[1] }} pts</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <hr>
+
+  <div class="card-footer">
+    <a href="/settings">⚙️ Settings</a>
+    <a href="/dashboard">← Dashboard</a>
+  </div>
+
 </div>
 </body>
+
+
 </html>

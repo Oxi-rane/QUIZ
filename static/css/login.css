@@ -1,0 +1,120 @@
+
+    body {
+      background-color: rgb(16, 15, 15);
+    }
+    .card {
+       position: fixed;
+    display: block;
+    top:50px;
+    left:550px;
+    color:#4ade80;
+    width:350px;
+    height: 600px;
+    margin: 4px;
+    padding-top: 20px;
+    padding-left: 20px;
+    border-radius: 20px; 
+    border: 1px solid rgb(96, 96, 96);
+     margin-left: 10px;
+    background-color: rgb(33, 33, 33);
+    }
+ .badge{
+    position: fixed;
+  
+  }
+  .card h2{
+    margin-top: 40px;
+    color: aliceblue;
+    width: 300px;
+  }
+  .card form{
+    padding-top: 20px;
+    font-size: large;
+    
+  }
+  label{
+    display: block;
+    margin-bottom: 10px;
+    color:  gray;
+    
+
+  }
+  input{
+    margin-bottom: 10px;
+    width:300px;
+    height: 35px;
+    font-weight: 500;           
+    color:aliceblue;                 
+    font-size: 0.9rem;           
+    letter-spacing: 0.5px;  
+    border: 1px solid rgb(96, 96, 96);
+    border-radius: 8px;
+    font-size: 16px;                  
+    font-weight: 500; 
+    padding-left: 10px;
+  
+    background-color:  rgb(33, 33, 33);
+    
+  }
+  button{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color:#4ade80;
+    color: black;
+    border: 1px solid rgba(96, 96, 96,0.5);
+    border-radius: 8px;
+    height: 40px;
+    width:320px;
+    font-size:16px;
+  }
+    .register-link a {
+      color: #86efac;
+    }
+    .register-link a:hover {
+      color: #16a34a;
+    }
+  .forgot{
+    position: relative;
+    left:50%;
+    color: gray;
+  }
+#error {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background-color: rgba(247, 71, 71, 0.8);
+  color: aliceblue;
+  border-radius: 6px;
+  width: 250px;
+  height: 40px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  animation: popinout 2s ease;
+}
+
+@keyframes popinout {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  75% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+ 
