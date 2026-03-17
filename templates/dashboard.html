@@ -74,6 +74,18 @@
 
 
 </div> 
+<div id="attempts">
+  <h1 id="attempts-head">Your top Scores</h1>
+  <div id="attempts-table-header">
+    <span>Quiz</span>
+    <span>Score</span>
+  </div>
+  <ol id="attempts-list"></ol>
+  <div id="attempts-empty" style="display:none;">
+    <p id="attempts-head2"></p>
+    <div id="category-suggestions"></div>
+  </div>
+</div>
 
 
 </body>
@@ -271,15 +283,95 @@
       display: block;
       margin-bottom: 6px;
     }
-
+    #attempts{
+      position: fixed;
+      left: 70%;
+      top: 60px;
+      display: flex;
+      flex-direction: column;
+      color: greenyellow;
+      width: 18%;
+    }
+    #attempts h1{
+      font-size: 16px;
+      margin-bottom: 12px;
+      color: gray;
+      font-weight: normal;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid rgba(197, 197, 197, 0.15);
+      padding-bottom: 8px;
+    }
+    #attempts-table-header{
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: gray;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    #attempts-list{
+      padding-left: 0;
+      list-style: none;
+      margin-bottom: 0;
+    }
+    #attempts-list li{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      margin-bottom: 5px;
+      border: 1px solid rgba(197, 197, 197, 0.2);
+      border-radius: 6px;
+      background-color: rgb(30, 28, 28);
+      font-size: 13px;
+      color: aliceblue;
+    }
+    #attempts-list li span:last-child{
+      color: greenyellow;
+      font-weight: bold;
+      margin-left: 10px;
+      white-space: nowrap;
+    }
+    #attempts-empty{
+      margin-top: 6px;
+    }
+    #attempts-head2{
+      font-size: 13px;
+      color: gray;
+      font-weight: normal;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    #category-suggestions{
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .suggestion-item{
+      padding: 7px 10px;
+      border: 1px solid rgba(197, 197, 197, 0.2);
+      border-radius: 6px;
+      background-color: rgb(30, 28, 28);
+      font-size: 13px;
+      color: rgb(136, 252, 185);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .suggestion-item:hover{
+      background-color: rgba(197, 197, 197, 0.1);
+      color: rgb(60, 114, 82);
+    }
 </style>
 
 <script>
 let current=0;
 const dailies = {{ dailies | tojson }};
-
-
+const attempts={{attempts|tojson}};
 let answers={{answers|tojson}};
+const cats = {{ categories | tojson }};
 function renderQuestion(){
 
     const q = dailies[current];
@@ -318,7 +410,7 @@ function nextQuestion(){
         renderQuestion();
     }
 }
-let quizAnswers = {};
+
 function prevQuestion(){
     if(current > 0){
         current--;
@@ -401,6 +493,7 @@ async function showAnswer(questionId, selectedOption){
 
     });
 }
+let quizAnswers = {};
 async function loadQuiz(quiz_id){
     try {
         const res = await fetch(`/get_quiz/${quiz_id}`);
@@ -408,20 +501,18 @@ async function loadQuiz(quiz_id){
 
         if(!data.questions || data.questions.length === 0) return;
 
-        // Hide daily quiz and category bar
         document.getElementById('quiz').style.display='none';
+        document.getElementById('attempts').style.display='none';
         document.querySelector('.category-bar').style.display='none';
        
-        // Show custom quiz container
         const customQuizDiv = document.getElementById('custom-quiz');
         customQuizDiv.style.display = 'block';
 
-        // Set quiz title
         document.getElementById('custom-quiz-title').textContent = data.title;
 
-        // Render all questions
+  
         const questionsDiv = document.getElementById('custom-quiz-questions');
-        questionsDiv.innerHTML = ''; // clear old content
+        questionsDiv.innerHTML = ''; 
 
         data.questions.forEach(q => {
             let html = `<div class="question" id="question-${q.id}">
@@ -441,14 +532,15 @@ async function loadQuiz(quiz_id){
             
         });
         const radios = document.querySelectorAll('#custom-quiz-questions input[type="radio"]');
-
+       
+        quizAnswers[quiz_id]={};
         radios.forEach(radio => {
             radio.addEventListener("change", function(){
 
                 const questionId = this.name.replace("q", "");
                 const selectedOption = parseInt(this.value);
 
-                quizAnswers[questionId] = selectedOption;
+                quizAnswers[quiz_id][questionId] = selectedOption;
 
                 const questionDiv = this.closest(".question");
 
@@ -466,6 +558,7 @@ function backToDashboard() {
     document.getElementById('custom-quiz').style.display = 'none';
     document.getElementById('quiz').style.display = 'block';
     document.querySelector('.category-bar').style.display = 'flex';
+    document.getElementById('attempts').style.display='flex';
 }
 async function submitQuiz(){
 
@@ -481,11 +574,11 @@ async function submitQuiz(){
 
     const result = await res.json();
 
-    // Color all questions green/red
+    
     const correctAnswers = result.correct_answers;
-
+    const quiz_id=result.quiz_id;
     for (const [questionId, correctOptionId] of Object.entries(correctAnswers)) {
-        const selectedOption = quizAnswers[questionId];
+        const selectedOption = quizAnswers[quiz_id][questionId];
         const questionDiv = document.getElementById(`question-${questionId}`);
         if (!questionDiv) continue;
 
@@ -509,8 +602,43 @@ async function submitQuiz(){
         });
     }
 
-    alert(`Score: ${result.score} / ${Object.keys(correctAnswers).length}`);
+    alert(`Score: ${result.score} / 100`);
 }
+function top_attempts() {
+  if (!attempts || attempts.length === 0){
+    document.getElementById('attempts-head').textContent = 'Get Started';
+    document.getElementById('attempts-table-header').style.display = 'none';
+    document.getElementById('attempts-head2').textContent = "You haven't played any quiz yet. Pick one:";
+    document.getElementById('attempts-empty').style.display = 'block';
+
+   
+    const container = document.getElementById('category-suggestions');
+   
+    cats.forEach(cat => {
+     
+        const p = document.createElement('p');
+        p.className = 'suggestion-item';
+        p.textContent = cat.name;
+      
+        container.appendChild(p);
+      
+    });
+  }
+  else{
+    const ol = document.getElementById('attempts-list');
+    for (let quiz of attempts){
+      const li = document.createElement('li');
+      const title = document.createElement('span');
+      title.textContent = quiz.title;
+      const score = document.createElement('span');
+      score.textContent = quiz.score;
+      li.appendChild(title);
+      li.appendChild(score);
+      ol.appendChild(li);
+    }
+  }
+}
+window.onload =top_attempts();
 window.onload = renderQuestion();
 
 </script>

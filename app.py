@@ -3,6 +3,8 @@ import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+
+
 db=mysql.connector.connect(host="localhost",user="root",password="#HM@mysql",database="quizdb")
 cursor=db.cursor()
 app=Flask(__name__)
@@ -116,7 +118,6 @@ def dashboard():
         WHERE user_id=%s
         """,(session["user_id"],))
     rows = cursor.fetchall()
-
     
 
     answers = {}
@@ -124,7 +125,25 @@ def dashboard():
     for r in rows:
         answers[r[0]] = r[1]
     
-    return render_template('dashboard.html',username=user[0],score=user[1], categories=categories_with_quizzes,dailies=dailies,answers=answers)
+    cursor.execute(
+    """
+    SELECT quiz_id, MAX(score) AS score
+    FROM attempts
+    WHERE quiz_id != 1 AND user_id = %s
+    GROUP BY quiz_id
+    ORDER BY score DESC
+    LIMIT 5
+    """,
+    (session['user_id'],)
+    )
+    scores=cursor.fetchall()
+    attempts=[]
+    for quiz_id,score in scores:
+        cursor.execute('select title from quizzes where quiz_id=%s',(quiz_id,))
+        title=cursor.fetchone()[0]
+        attempts.append({'title':title,'score':score})
+    
+    return render_template('dashboard.html',username=user[0],score=user[1], categories=categories_with_quizzes,dailies=dailies,answers=answers,attempts=attempts)
 
     
 @app.route("/profile")
@@ -167,7 +186,7 @@ def change_password():
 
         user_id = session["user_id"]
 
-        # get current password from db
+       
         query = "SELECT password FROM users WHERE user_id=%s"
         cursor.execute(query,(user_id,))
         user = cursor.fetchone()
@@ -211,7 +230,6 @@ def check_answer():
 
     db.commit()
 
-    # check database here
     query="select option_id from ques_options where question_id=%s and is_correct=True"
     cursor.execute(query,(qid,))
     correct=cursor.fetchone()[0]
@@ -237,7 +255,7 @@ def check_answer():
         """, (session['user_id'],))
         cursor.execute("""
             UPDATE users
-            SET total_score = Greates(total_score - 5,0)
+            SET total_score = Greatest(total_score - 5,0)
             WHERE user_id=%s
             """,(session["user_id"],))
         return jsonify({"correct":False,"correct_option":correct})
@@ -260,7 +278,6 @@ def show_answer():
 
     db.commit()
 
-    # check database here
     query="select option_id from ques_options where question_id=%s and is_correct=True"
     cursor.execute(query,(qid,))
     correct=cursor.fetchone()[0]
@@ -271,11 +288,9 @@ def show_answer():
 @app.route("/get_quiz/<int:quiz_id>")
 def get_quiz(quiz_id):
 
-    # Fetch quiz title
     cursor.execute("SELECT title FROM quizzes WHERE quiz_id=%s", (quiz_id,))
     title = cursor.fetchone()[0]
 
-    # Fetch questions
     cursor.execute(
         "SELECT question_id, question_text FROM questions WHERE quiz_id=%s",
         (quiz_id,)
@@ -285,7 +300,7 @@ def get_quiz(quiz_id):
     quiz_questions = []
 
     for q in questions:
-        ques_id, ques_text = q  # or q["question_id"], q["question_text"] if using DictCursor
+        ques_id, ques_text = q  
 
         cursor.execute(
             "SELECT option_id, option_text FROM ques_options WHERE question_id=%s",
@@ -307,17 +322,17 @@ def get_quiz(quiz_id):
     })
 @app.route("/submit_quiz", methods=["POST"])
 def submit_quiz():
-
+    print("entered submit quiz")
     data = request.get_json()
     answers = data["answers"]
-
+    quiz_id = list(answers.keys())[0]
     user_id = session["user_id"]
-
+    print(quiz_id)
     score = 0
     wrong = 0
     correct_answers = {}
    
-    for question_id, selected_option in answers.items():
+    for question_id, selected_option in answers[quiz_id].items():
 
         cursor.execute("""
             SELECT option_id
@@ -332,20 +347,21 @@ def submit_quiz():
             score += 10
         
         else:
-            score-=5
+            score=max(score-5,0)
             wrong += 1
 
     cursor.execute("""
         INSERT INTO attempts (user_id, quiz_id, score, wrong_attempts)
         VALUES (%s,%s,%s,%s)
-    """, (user_id, 1, score, wrong))
+    """, (user_id, quiz_id, max(score,0), wrong))
 
     db.commit()
 
     return jsonify({
+        'quiz_id':quiz_id,
         "score": score,
         "wrong": wrong,
         "correct_answers": correct_answers
     })
 if __name__=="__main__":
-    app.run(debug=True)
+   app.run(host="0.0.0.0", debug=True)
