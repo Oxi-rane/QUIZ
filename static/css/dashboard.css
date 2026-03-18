@@ -91,7 +91,7 @@
       padding: 10px 20px;
       color: rgba(197, 197, 197, 0.8);
       text-decoration: none;
-      font-size: 14px;
+      font-size: 20px;
       border-radius: 6px;
       margin: 0 8px;
       transition: background 0.15s;
@@ -125,7 +125,7 @@
       border-radius: 5px;
       cursor: pointer;
       color: aliceblue;
-      font-size: 14px;
+      font-size: 18px;
     }
     .category:hover {
       background-color: rgba(197, 197, 197, 0.1);
@@ -191,8 +191,9 @@
     /* ── MAIN QUIZ AREA ── */
     #quiz {
       top: 55px;
-      width: 480px;
+      width: 600px;
       left: 22%;
+      
       margin: auto;
       position: fixed;
       padding-top: 20px;
@@ -200,7 +201,7 @@
     #quiz h1 {
       color: #4ade80;
       margin-bottom: 12px;
-      font-size: 20px;
+      font-size: 24px;
     }
     #quiz p {
       color: aliceblue;
@@ -273,7 +274,7 @@
     /* ── ATTEMPTS PANEL ── */
     #attempts {
       position: fixed;
-      left: 70%;
+      left: 75%;
       top: 60px;
       display: flex;
       flex-direction: column;
@@ -282,7 +283,7 @@
       padding-top: 20px;
     }
     #attempts-head {
-      font-size: 11px;
+      font-size: 18px;
       margin-bottom: 12px;
       color: gray;
       font-weight: normal;
@@ -295,7 +296,7 @@
       display: flex;
       justify-content: space-between;
       padding: 4px 10px;
-      font-size: 11px;
+      font-size: 16px;
       color: gray;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -314,7 +315,7 @@
       border: 1px solid rgba(197, 197, 197, 0.2);
       border-radius: 6px;
       background-color: rgb(30, 28, 28);
-      font-size: 13px;
+      font-size: 16px;
       color: aliceblue;
     }
     #attempts-list li span:last-child {
