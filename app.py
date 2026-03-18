@@ -70,6 +70,7 @@ def register():
 
 @app.route("/dashboard")
 def dashboard():
+    import random
     if "user_id" not in session:
         return redirect("/login")
 
@@ -103,6 +104,7 @@ def dashboard():
         cursor.execute("SELECT option_id, option_text FROM ques_options WHERE question_id=?", (ques_id,))
         options = cursor.fetchall()
         all_options = [{"id": opt[0], "text": opt[1]} for opt in options]
+        random.shuffle(all_options)
         dailies.append({"id": ques_id, "text": ques_text, "options": all_options})
 
     cursor.execute("""
@@ -278,6 +280,7 @@ def show_answer():
 
 @app.route("/get_quiz/<int:quiz_id>")
 def get_quiz(quiz_id):
+    import random
     db = get_db()
     cursor = db.cursor()
 
@@ -293,7 +296,9 @@ def get_quiz(quiz_id):
         cursor.execute("SELECT option_id, option_text FROM ques_options WHERE question_id=?", (ques_id,))
         options = cursor.fetchall()
         all_options = [{"id": opt[0], "text": opt[1]} for opt in options]
+        random.shuffle(all_options)
         quiz_questions.append({"id": ques_id, "text": ques_text, "options": all_options})
+        
 
     return jsonify({"quiz_id": quiz_id, "title": title, "questions": quiz_questions})
 
