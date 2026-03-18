@@ -20,17 +20,6 @@
         </div>
     </div>
     <hr>
-    <div id="Actions">
-        <ul>
-            <li><a href="/profile"> 👤 Profile</a></li>
-            <li><a href="/settings"> 🛠️ Settings</a></li>
-            <li><a href="/logout" onclick="return confirm('Are you sure you want to logout?')"> 🚪 Logout</a></li>
-        </ul>
-    </div>
-</nav>
-
-<main>
-  <div id="quiz">
     <div id="stats-cards">
         <div class="stat-card">
             <p class="stat-label">Total Score</p>
@@ -45,7 +34,32 @@
             <p class="stat-value" id="stat-daily">—</p>
         </div>
     </div>
-    <h1 id="quiz-name">Daily Quiz</h1>
+    <div id="Actions">
+        <ul>
+            <li><a href="/profile"> 👤 Profile</a></li>
+            <li><a href="/settings"> 🛠️ Settings</a></li>
+            <li><a href="/logout" onclick="return confirm('Are you sure you want to logout?')"> 🚪 Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main>
+    <div id="attempts">
+  <h1 id="attempts-head">Your Top Scores</h1>
+  <div id="attempts-table-header">
+    <span>Quiz</span>
+    <span>Score</span>
+  </div>
+  <ol id="attempts-list"></ol>
+  <div id="attempts-empty" style="display:none;">
+    <p id="attempts-head2"></p>
+    <div id="category-suggestions"></div>
+  </div>
+</div>
+
+  <div id="quiz">
+<h1 id="quiz-name">Daily Quiz</h1>
+    <p id="question-counter" style="color:gray;font-size:13px;margin-bottom:8px;margin-top:-8px;">Question <span id="q-current">1</span> of <span id="q-total"></span></p>
     <div id="question">
         <p id="question-text"></p>
         <div id="options"></div>
@@ -70,6 +84,23 @@
     </div>
     {% endfor %}
   </div>
+
+<div id="scoring-guide">
+    <p id="scoring-title">How Scoring Works</p>
+    <div class="score-row">
+        <span class="score-icon correct-icon">✓</span>
+        <span class="score-desc">Correct answer</span>
+        <span class="score-pts correct-pts">+10 pts</span>
+    </div>
+    <div class="score-row">
+        <span class="score-icon wrong-icon">✗</span>
+        <span class="score-desc">Wrong answer</span>
+        <span class="score-pts wrong-pts">−5 pts</span>
+    </div>
+    <div class="score-row">
+        <span class="score-desc" style="color:rgba(197,197,197,0.4);font-size:12px;">Score never goes below 0</span>
+    </div>
+</div>
 </main>
 
 <div id="custom-quiz" style="display:none;">
@@ -79,18 +110,6 @@
     <button id="submit" onclick="submitQuiz()">Submit Quiz</button>
 </div>
 
-<div id="attempts">
-  <h1 id="attempts-head">Your Top Scores</h1>
-  <div id="attempts-table-header">
-    <span>Quiz</span>
-    <span>Score</span>
-  </div>
-  <ol id="attempts-list"></ol>
-  <div id="attempts-empty" style="display:none;">
-    <p id="attempts-head2"></p>
-    <div id="category-suggestions"></div>
-  </div>
-</div>
 
 <div id="score-modal" style="display:none;">
     <div id="score-modal-box">
@@ -115,6 +134,8 @@ const cats = {{ categories | tojson }};
 
 function renderQuestion(){
     const q = dailies[current];
+    document.getElementById("q-current").textContent = current + 1;
+    document.getElementById("q-total").textContent = dailies.length;
     document.getElementById("question-text").textContent = q.text;
     let html = "";
     for (let opt of q.options){
@@ -209,6 +230,7 @@ async function loadQuiz(quiz_id){
         document.getElementById('quiz').style.display='none';
         document.getElementById('attempts').style.display='none';
         document.querySelector('.category-bar').style.display='none';
+        document.getElementById('scoring-guide').style.display='none';
         const customQuizDiv = document.getElementById('custom-quiz');
         customQuizDiv.style.display = 'block';
         document.getElementById('custom-quiz-title').textContent = data.title;
@@ -241,6 +263,7 @@ function backToDashboard() {
     document.getElementById('quiz').style.display = 'block';
     document.querySelector('.category-bar').style.display = 'flex';
     document.getElementById('attempts').style.display='flex';
+     document.getElementById('scoring-guide').style.display='block';
 }
 
 async function submitQuiz(){

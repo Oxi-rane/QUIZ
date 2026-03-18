@@ -47,8 +47,8 @@
       padding: 24px 20px 20px 20px;
     }
     #avatar {
-      width: 48px;
-      height: 48px;
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
       background-color: #4ade80;
       color: black;
@@ -65,13 +65,13 @@
       gap: 2px;
     }
     #username-text {
-      font-size: 16px;
+      font-size: 24px;
       font-weight: bold;
       color: aliceblue;
       margin: 0;
     }
     #score-text {
-      font-size: 13px;
+      font-size: 24px;
       color: #4ade80;
       margin: 0;
     }
@@ -134,13 +134,14 @@
       display: none;
       position: absolute;
       left: 0;
-      background-color: rgb(30, 28, 28);
+      background-color: rgba(30, 28, 28,0.8);
       border: 1px solid rgba(197, 197, 197, 0.2);
       border-radius: 5px;
       min-width: 150px;
       flex-direction: column;
       z-index: 9999;
       padding: 5px 0;
+      
     }
     .quiz-dropdown a {
       display: block;
@@ -160,25 +161,28 @@
     /* ── STATS CARDS ── */
     #stats-cards {
       display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px 12px;
     }
     .stat-card {
-      flex: 1;
-      background-color: rgb(30, 28, 28);
-      border: 1px solid rgba(197, 197, 197, 0.15);
-      border-radius: 10px;
-      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgb(24, 23, 23);
+      border: 1px solid rgba(197, 197, 197, 0.1);
+      border-radius: 8px;
+      padding: 8px 12px;
     }
     .stat-label {
-      font-size: 11px;
+      font-size: 12px;
       color: gray;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin: 0 0 6px 0;
+      letter-spacing: 0.05em;
+      margin: 0;
     }
     .stat-value {
-      font-size: 24px;
+      font-size: 16px;
       font-weight: bold;
       color: #4ade80;
       margin: 0;
@@ -186,7 +190,7 @@
 
     /* ── MAIN QUIZ AREA ── */
     #quiz {
-      top: 60px;
+      top: 55px;
       width: 480px;
       left: 22%;
       margin: auto;
@@ -395,3 +399,46 @@
       cursor: pointer;
     }
 
+
+    /* ── SCORING GUIDE ── */
+    #scoring-guide {
+      position: fixed;
+      bottom: 30px;
+      left: 22%;
+      width: 480px;
+      background-color: rgb(30, 28, 28);
+      border: 1px solid rgba(197, 197, 197, 0.15);
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+    #scoring-title {
+      font-size: 11px;
+      color: gray;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 0 0 10px 0;
+    }
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .score-icon {
+      font-size: 14px;
+      width: 20px;
+      text-align: center;
+    }
+    .correct-icon { color: #4ade80; }
+    .wrong-icon { color: rgb(252, 136, 136); }
+    .score-desc {
+      flex: 1;
+      font-size: 13px;
+      color: rgba(197, 197, 197, 0.7);
+    }
+    .score-pts {
+      font-size: 13px;
+      font-weight: bold;
+    }
+    .correct-pts { color: #4ade80; }
+    .wrong-pts { color: rgb(252, 136, 136); }
